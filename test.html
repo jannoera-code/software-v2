@@ -161,8 +161,14 @@
                 <button id="toggle-personal-mode" onclick="togglePersonalMode()" class="px-2 py-1 rounded hover:bg-cream/10 transition-colors text-cream/30 cursor-not-allowed" disabled title="Upload a logo first to enable Personalized mode">🎨 Personalized Mode</button>
             </div>
             
+            <button onclick="launchSetupTutorial()" class="text-xs font-mono text-accent hover:text-cream flex items-center gap-1.5 bg-accent/20 hover:bg-accent/40 px-3 py-1.5 rounded-lg border border-accent/40 font-bold transition-all">
+                🚀 Launch Setup & Tutorial
+            </button>
             <button onclick="setUIMode('calendar')" class="text-xs font-mono text-cream/60 hover:text-cream flex items-center gap-1.5 bg-darkcard px-3 py-1.5 rounded-lg border border-cream/10">
                 📅 Booking Calendar (Home)
+            </button>
+            <button onclick="handleSignOut()" class="text-xs font-mono text-red-400 hover:text-red-300 flex items-center gap-1.5 bg-darkcard px-3 py-1.5 rounded-lg border border-red-500/20 transition-colors">
+                🚪 Sign Out
             </button>
             <span id="header-logo-studio-container" class="flex items-center">
                 <a href="index.html" class="text-xs font-mono tracking-widest uppercase hover:text-accent transition-colors">Back to Studio</a>
@@ -1277,6 +1283,102 @@ Standard 30 days payment terms apply.</textarea>
             renderBookingCalendar();
         }
 
+        function executeOneClickStayAutomation(stayId, event) {
+            const stay = staysList.find(s => s.id === stayId);
+            if (!stay) return;
+
+            if (!stay.workflowStatus) stay.workflowStatus = {};
+            stay.workflowStatus.quoteSent = true;
+            stay.workflowStatus.invoiceSent = true;
+            stay.workflowStatus.pre = true;
+            stay.workflowStatus.during = true;
+            stay.workflowStatus.post = true;
+
+            if (stay.customChecklist && stay.customChecklist.length > 0) {
+                stay.customChecklist.forEach(item => item.done = true);
+            }
+
+            saveStaysDatabase();
+            renderBookingCalendar();
+
+            // Fire satisfying celebratory burst visual feedback
+            triggerCelebrationBurst(event ? event.clientX : window.innerWidth / 2, event ? event.clientY : window.innerHeight / 2, `⚡ 1-Click Automation Complete for ${stay.guestName}!`);
+        }
+
+        function triggerCelebrationBurst(x, y, messageText) {
+            // Particle Burst Canvas
+            let canvas = document.getElementById('celebration-canvas');
+            if (!canvas) {
+                canvas = document.createElement('canvas');
+                canvas.id = 'celebration-canvas';
+                canvas.className = 'fixed inset-0 pointer-events-none z-[200]';
+                document.body.appendChild(canvas);
+            }
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#AA4628', '#10B981', '#F59E0B', '#3B82F6', '#EC4899', '#FFFDD0'];
+
+            for (let i = 0; i < 40; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 8 + 3;
+                particles.push({
+                    x: x || window.innerWidth / 2,
+                    y: y || window.innerHeight / 2,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: Math.random() * 5 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1,
+                    decay: Math.random() * 0.02 + 0.015
+                });
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+                particles.forEach(p => {
+                    if (p.alpha > 0) {
+                        alive = true;
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.15; // Gravity
+                        p.alpha -= p.decay;
+
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = p.color;
+                        ctx.globalAlpha = Math.max(0, p.alpha);
+                        ctx.fill();
+                    }
+                });
+                if (alive) {
+                    requestAnimationFrame(animateParticles);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            animateParticles();
+
+            // Animated Celebration Toast Notification
+            const existingToast = document.getElementById('celebration-toast');
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'celebration-toast';
+            toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 z-[210] bg-gradient-to-r from-emerald-600 via-accent to-emerald-600 text-white font-mono font-extrabold px-6 py-3.5 rounded-2xl shadow-2xl border border-cream/30 text-xs md:text-sm tracking-wide flex items-center gap-3 animate-bounce';
+            toast.innerHTML = `<span>🎉</span> <span>${messageText || '1-Click Automation Executed!'}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                if (toast) toast.remove();
+            }, 3000);
+        }
+
         function addStayCustomChecklistItem(stayId) {
             const stay = staysList.find(s => s.id === stayId);
             if (!stay) return;
@@ -1422,24 +1524,33 @@ Standard 30 days payment terms apply.</textarea>
                 const percent = Math.round((completedSteps / totalSteps) * 100);
 
                 const card = document.createElement('div');
-                card.className = 'bg-darkbg/70 border border-cream/10 p-4 rounded-xl space-y-3 flex flex-col justify-between';
+                card.className = 'bg-darkbg/70 border border-cream/10 p-4 rounded-xl space-y-3 flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:border-accent/40 shadow-xl';
+                card.id = `stay-card-${stay.id}`;
                 card.innerHTML = `
                     <div class="space-y-3">
                         <div class="flex justify-between items-start border-b border-cream/5 pb-2">
                             <div>
-                                <span class="font-bold text-cream text-xs block">${stay.guestName}</span>
+                                <span class="font-bold text-cream text-xs block flex items-center gap-1.5">
+                                    ${stay.guestName}
+                                    ${percent === 100 ? '<span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/40">✓ ALL SET</span>' : ''}
+                                </span>
                                 <span class="text-[9px] font-mono text-accent font-semibold">${stay.roomName}</span>
                                 <span class="text-[8px] font-mono text-cream/50 block mt-0.5">Stay: ${stay.checkin} → ${stay.checkout}</span>
                             </div>
                             <div class="text-right font-mono">
-                                <span class="text-[10px] font-bold text-emerald-400 block">${percent}% Done</span>
+                                <span class="text-[11px] font-bold text-emerald-400 block">${percent}% Done</span>
                                 <button onclick="deleteStayBooking('${stay.id}')" class="text-[8px] text-red-400 hover:text-red-300">Delete Stay</button>
                             </div>
                         </div>
 
-                        <!-- Progress Bar -->
-                        <div class="w-full bg-darkbg h-1.5 rounded-full overflow-hidden border border-cream/10">
-                            <div class="bg-emerald-500 h-full transition-all duration-300" style="width: ${percent}%;"></div>
+                        <!-- High Impact 1-Click Automate Button -->
+                        <button onclick="executeOneClickStayAutomation('${stay.id}', event)" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-accent via-amber-600 to-emerald-600 hover:from-accent-hover hover:to-emerald-500 text-white font-mono font-extrabold text-[10px] tracking-wider shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] btn-depth flex items-center justify-center gap-1.5 uppercase border border-cream/20">
+                            <span>⚡ 1-CLICK AUTOMATE WORKFLOW</span>
+                        </button>
+
+                        <!-- Progress Bar with Glow -->
+                        <div class="w-full bg-darkbg h-2 rounded-full overflow-hidden border border-cream/10 relative">
+                            <div class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-full transition-all duration-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]" style="width: ${percent}%;"></div>
                         </div>
 
                         <!-- Stay Specific Tasks & Checklist -->
@@ -3106,64 +3217,595 @@ Standard 30 days payment terms apply.</textarea>
         let isPersonalMode = false;
         let onboardingLogoBase64 = '';
 
-        function checkAuthAndOnboarding() {
-            const hasLoggedIn = sessionStorage.getItem('byjanno_auth_logged_in') === 'true';
-            if (!hasLoggedIn) {
-                showLoginOverlay();
-                return;
-            }
-
-            const companyConfig = localStorage.getItem('byjanno_company_config');
-            if (!companyConfig) {
-                showOnboardingOverlay();
-                return;
-            }
-
-            // Setup is complete, initialize the CRM values from saved config
-            const config = JSON.parse(companyConfig);
-            applyCompanyConfig(config);
-            setUIMode('calendar');
+        // Account Database & Authentication Management
+        function getAccountsDB() {
+            try {
+                const data = localStorage.getItem('byjanno_accounts_db');
+                if (data) return JSON.parse(data);
+            } catch (e) {}
+            // Default initial account
+            const initial = [
+                {
+                    username: 'jan',
+                    password: 'jp2604',
+                    setupCompleted: true,
+                    companyName: 'By Janno Digital Studio',
+                    logoBase64: ''
+                }
+            ];
+            localStorage.setItem('byjanno_accounts_db', JSON.stringify(initial));
+            return initial;
         }
 
-        function showLoginOverlay() {
-            const loginHtml = `
+        function saveAccountsDB(accounts) {
+            try {
+                localStorage.setItem('byjanno_accounts_db', JSON.stringify(accounts));
+            } catch (e) {}
+        }
+
+        function getCurrentUser() {
+            return sessionStorage.getItem('byjanno_active_user');
+        }
+
+        function checkAuthAndOnboarding() {
+            const activeUser = getCurrentUser();
+            if (!activeUser) {
+                showAuthOverlay('signin');
+                return;
+            }
+
+            const accounts = getAccountsDB();
+            const account = accounts.find(a => a.username.toLowerCase() === activeUser.toLowerCase());
+
+            if (!account) {
+                sessionStorage.removeItem('byjanno_active_user');
+                showAuthOverlay('signin');
+                return;
+            }
+
+            // Apply account configuration if present
+            if (account.companyName) {
+                applyCompanyConfig({
+                    companyName: account.companyName,
+                    logoBase64: account.logoBase64 || ''
+                });
+            }
+
+            // Check if user has completed setup
+            if (!account.setupCompleted) {
+                launchSetupTutorial();
+            } else {
+                setUIMode('calendar');
+            }
+        }
+
+        function showAuthOverlay(defaultTab = 'signin') {
+            const existing = document.getElementById('auth-overlay');
+            if (existing) existing.remove();
+
+            const authHtml = `
                 <div id="auth-overlay" class="fixed inset-0 z-[100] bg-[#0E161B] flex items-center justify-center p-4">
                     <div class="max-w-md w-full bg-[#16222A] border border-cream/15 p-8 rounded-2xl shadow-2xl space-y-6">
                         <div class="text-center space-y-2">
                             <h2 class="font-brand text-3xl text-cream">By Janno<span class="text-accent">.</span></h2>
-                            <p class="font-mono text-[10px] text-cream/40 uppercase tracking-widest">Secure CRM Portal Access</p>
+                            <p class="font-mono text-[10px] text-cream/40 uppercase tracking-widest">Hospitality CRM Portal Access</p>
                         </div>
-                        <div class="space-y-4">
+
+                        <!-- Auth Mode Tabs -->
+                        <div class="flex border-b border-cream/10 pb-2 gap-2 font-mono text-xs">
+                            <button id="auth-tab-signin" onclick="switchAuthTab('signin')" class="flex-1 py-2 text-center rounded-lg bg-accent text-cream font-bold transition-all">SIGN IN</button>
+                            <button id="auth-tab-signup" onclick="switchAuthTab('signup')" class="flex-1 py-2 text-center rounded-lg bg-darkbg/50 text-cream/60 hover:text-cream transition-all">SIGN UP</button>
+                        </div>
+
+                        <!-- Sign In Form -->
+                        <div id="auth-form-signin" class="space-y-4">
                             <div>
                                 <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Username</label>
-                                <input type="text" id="auth-username" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent">
+                                <input type="text" id="signin-username" placeholder="e.g. manager" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent text-xs">
                             </div>
                             <div>
                                 <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Password</label>
-                                <input type="password" id="auth-password" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent">
+                                <input type="password" id="signin-password" placeholder="••••••••" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent text-xs">
                             </div>
-                            <div id="auth-error" class="hidden text-xs text-red-400 font-mono text-center">Invalid credentials. Please try again.</div>
-                            <button onclick="handleLogin()" class="w-full bg-accent hover:bg-accent-hover text-cream font-mono font-bold py-3 rounded-lg transition-all uppercase tracking-wider text-xs">Enter System</button>
+                            <div id="signin-error" class="hidden text-xs text-red-400 font-mono text-center">Invalid username or password.</div>
+                            <div id="signin-msg" class="hidden text-xs text-emerald-400 font-mono text-center">Account created! Please sign in with your credentials.</div>
+                            <button onclick="handleSignInSubmit()" class="w-full bg-accent hover:bg-accent-hover text-cream font-mono font-bold py-3 rounded-lg transition-all uppercase tracking-wider text-xs btn-depth">Sign In to Dashboard</button>
+                        </div>
+
+                        <!-- Sign Up Form -->
+                        <div id="auth-form-signup" class="space-y-4 hidden">
+                            <div>
+                                <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Choose Username</label>
+                                <input type="text" id="signup-username" placeholder="e.g. resort_admin" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Create Password</label>
+                                <input type="password" id="signup-password" placeholder="At least 4 characters" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Confirm Password</label>
+                                <input type="password" id="signup-confirm-password" placeholder="Confirm password" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent text-xs">
+                            </div>
+                            <div id="signup-error" class="hidden text-xs text-red-400 font-mono text-center">Please fill out all fields.</div>
+                            <button onclick="handleSignUpSubmit()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold py-3 rounded-lg transition-all uppercase tracking-wider text-xs btn-depth">Create Account</button>
                         </div>
                     </div>
                 </div>
             `;
-            document.body.insertAdjacentHTML('beforeend', loginHtml);
+            document.body.insertAdjacentHTML('beforeend', authHtml);
+            switchAuthTab(defaultTab);
         }
 
-        function handleLogin() {
-            const user = document.getElementById('auth-username').value.trim();
-            const pass = document.getElementById('auth-password').value.trim();
+        function switchAuthTab(tab) {
+            const btnSignIn = document.getElementById('auth-tab-signin');
+            const btnSignUp = document.getElementById('auth-tab-signup');
+            const formSignIn = document.getElementById('auth-form-signin');
+            const formSignUp = document.getElementById('auth-form-signup');
 
-            if (user === 'jan' && pass === 'jp2604') {
-                sessionStorage.setItem('byjanno_auth_logged_in', 'true');
-                const overlay = document.getElementById('auth-overlay');
-                if (overlay) overlay.remove();
-                checkAuthAndOnboarding();
+            if (!btnSignIn || !btnSignUp) return;
+
+            if (tab === 'signin') {
+                btnSignIn.className = 'flex-1 py-2 text-center rounded-lg bg-accent text-cream font-bold transition-all';
+                btnSignUp.className = 'flex-1 py-2 text-center rounded-lg bg-darkbg/50 text-cream/60 hover:text-cream transition-all';
+                formSignIn.classList.remove('hidden');
+                formSignUp.classList.add('hidden');
             } else {
-                const err = document.getElementById('auth-error');
-                if (err) err.classList.remove('hidden');
+                btnSignUp.className = 'flex-1 py-2 text-center rounded-lg bg-emerald-600 text-white font-bold transition-all';
+                btnSignIn.className = 'flex-1 py-2 text-center rounded-lg bg-darkbg/50 text-cream/60 hover:text-cream transition-all';
+                formSignUp.classList.remove('hidden');
+                formSignIn.classList.add('hidden');
             }
+        }
+
+        function handleSignUpSubmit() {
+            const user = document.getElementById('signup-username').value.trim();
+            const pass = document.getElementById('signup-password').value.trim();
+            const confirm = document.getElementById('signup-confirm-password').value.trim();
+            const errEl = document.getElementById('signup-error');
+
+            if (!user || !pass || !confirm) {
+                errEl.textContent = 'Please fill out all required fields.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            if (pass !== confirm) {
+                errEl.textContent = 'Passwords do not match.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const accounts = getAccountsDB();
+            if (accounts.some(a => a.username.toLowerCase() === user.toLowerCase())) {
+                errEl.textContent = 'Username already exists. Please pick another or Sign In.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            // Create new user account with setupCompleted: false
+            const newUser = {
+                username: user,
+                password: pass,
+                setupCompleted: false,
+                companyName: '',
+                logoBase64: '',
+                rooms: ['Suite 1 (Deluxe Ocean)', 'Suite 2 (Honeymoon)', 'Room 3 (Garden View)', 'Room 4 (Penthouse)', 'Villa Beachfront']
+            };
+
+            accounts.push(newUser);
+            saveAccountsDB(accounts);
+
+            errEl.classList.add('hidden');
+            switchAuthTab('signin');
+            document.getElementById('signin-username').value = user;
+            document.getElementById('signin-password').value = '';
+            const msgEl = document.getElementById('signin-msg');
+            if (msgEl) {
+                msgEl.textContent = '✓ Account created successfully! Please sign in with your password.';
+                msgEl.classList.remove('hidden');
+            }
+        }
+
+        function handleSignInSubmit() {
+            const user = document.getElementById('signin-username').value.trim();
+            const pass = document.getElementById('signin-password').value.trim();
+            const errEl = document.getElementById('signin-error');
+
+            const accounts = getAccountsDB();
+            const account = accounts.find(a => a.username.toLowerCase() === user.toLowerCase() && a.password === pass);
+
+            if (!account) {
+                if (errEl) {
+                    errEl.textContent = 'Invalid username or password. Please try again.';
+                    errEl.classList.remove('hidden');
+                }
+                return;
+            }
+
+            sessionStorage.setItem('byjanno_active_user', account.username);
+            const overlay = document.getElementById('auth-overlay');
+            if (overlay) overlay.remove();
+
+            checkAuthAndOnboarding();
+        }
+
+        function handleSignOut() {
+            sessionStorage.removeItem('byjanno_active_user');
+            showAuthOverlay('signin');
+        }
+
+        // ================= GUIDED SYSTEM SETUP & TUTORIAL WIZARD =================
+        let setupStepCurrent = 1;
+        const setupStepTotal = 6;
+        let setupTempLogo = '';
+        let setupRoomsList = ['Suite 1 (Deluxe Ocean)', 'Suite 2 (Honeymoon)', 'Room 3 (Garden View)', 'Room 4 (Penthouse)', 'Villa Beachfront'];
+
+        function launchSetupTutorial() {
+            const existing = document.getElementById('setup-tutorial-overlay');
+            if (existing) existing.remove();
+
+            // Load user's existing settings if available
+            const activeUser = getCurrentUser();
+            const accounts = getAccountsDB();
+            const account = accounts.find(a => a.username.toLowerCase() === (activeUser || '').toLowerCase());
+
+            const existingCompName = account && account.companyName ? account.companyName : (document.getElementById('company-name')?.value || '');
+            setupTempLogo = account && account.logoBase64 ? account.logoBase64 : docLogoBase64;
+            if (account && account.rooms && account.rooms.length > 0) {
+                setupRoomsList = [...account.rooms];
+            }
+
+            const setupHtml = `
+                <div id="setup-tutorial-overlay" class="fixed inset-0 z-[95] bg-[#0E161B]/95 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+                    <div class="max-w-2xl w-full bg-[#16222A] border border-cream/20 p-6 md:p-8 rounded-3xl shadow-2xl space-y-6 relative my-8">
+
+                        <!-- Top Header & Exit Button -->
+                        <div class="flex justify-between items-center border-b border-cream/10 pb-4">
+                            <div>
+                                <span class="text-[9px] font-mono text-accent font-bold uppercase tracking-widest block">SYSTEM SETUP & TUTORIAL</span>
+                                <h2 class="font-brand text-2xl text-cream">Configure Your Workspace</h2>
+                            </div>
+                            <button onclick="exitSetupTutorial()" title="Exit Setup" class="text-xs font-mono text-cream/50 hover:text-cream border border-cream/10 px-3 py-1.5 rounded-xl bg-darkbg hover:bg-darkbg/80 transition-colors">
+                                ✖ Exit Setup
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-[10px] font-mono text-cream/60">
+                                <span id="setup-step-indicator">Step 1 of 6</span>
+                                <span id="setup-step-percent">16% Complete</span>
+                            </div>
+                            <div class="w-full bg-darkbg h-2 rounded-full overflow-hidden border border-cream/10">
+                                <div id="setup-progress-bar" class="bg-accent h-full w-[16%] transition-all duration-300"></div>
+                            </div>
+                        </div>
+
+                        <!-- Step Cards Container -->
+                        <div class="bg-darkbg/50 border border-cream/10 p-6 rounded-2xl space-y-4">
+
+                            <!-- STEP 1: Company Profile & Logo -->
+                            <div id="setup-card-1" class="setup-card-step space-y-4">
+                                <div class="space-y-1">
+                                    <h3 class="text-sm font-bold font-mono text-accent uppercase">1. Company Identity & Brand Logo</h3>
+                                    <p class="text-xs text-cream/70 leading-relaxed">Enter your property or company name and upload your logo to customize all invoices, quotes, and guest notices.</p>
+                                </div>
+                                <div class="space-y-3 text-xs">
+                                    <div>
+                                        <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Company / Property Name</label>
+                                        <input type="text" id="setup-company-name" value="${existingCompName}" placeholder="e.g. Ocean Breeze Luxury Suites" class="w-full bg-darkbg border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent font-semibold">
+                                    </div>
+                                    <div>
+                                        <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Company Logo</label>
+                                        <div class="relative border border-dashed border-cream/20 rounded-lg p-4 text-center bg-darkbg/40 hover:border-accent/50 transition-colors cursor-pointer group">
+                                            <input type="file" id="setup-logo-file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleSetupLogoUpload(this)">
+                                            <span id="setup-logo-label" class="text-[10px] text-cream/50 font-mono">${setupTempLogo ? '✓ Logo Loaded (Click to replace)' : 'Click or drop logo image here'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Contact Email</label>
+                                            <input type="email" id="setup-company-email" value="${document.getElementById('company-email')?.value || 'info@hotel.com'}" class="w-full bg-darkbg border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Contact Phone</label>
+                                            <input type="text" id="setup-company-phone" value="${document.getElementById('company-phone')?.value || '+27 82 000 0000'}" class="w-full bg-darkbg border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 2: Rooms & Properties Configuration -->
+                            <div id="setup-card-2" class="setup-card-step space-y-4 hidden">
+                                <div class="space-y-1">
+                                    <h3 class="text-sm font-bold font-mono text-accent uppercase">2. Rooms & Properties Setup</h3>
+                                    <p class="text-xs text-cream/70 leading-relaxed">Add or edit your available rooms, suites, or rental properties to display on your Booking Calendar.</p>
+                                </div>
+                                <div class="space-y-3 text-xs">
+                                    <div class="flex gap-2">
+                                        <input type="text" id="setup-new-room-input" placeholder="e.g. Penthouse Suite 5" class="flex-1 bg-darkbg border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent">
+                                        <button onclick="addSetupRoom()" class="bg-accent hover:bg-accent-hover text-cream px-4 py-2 rounded-lg font-mono text-xs font-bold">+ Add Room</button>
+                                    </div>
+                                    <div class="space-y-1.5 max-h-48 overflow-y-auto custom-scroll pr-1" id="setup-rooms-list-container">
+                                        <!-- Rendered dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 3: Invoice & Quote Template Defaults -->
+                            <div id="setup-card-3" class="setup-card-step space-y-4 hidden">
+                                <div class="space-y-1">
+                                    <h3 class="text-sm font-bold font-mono text-accent uppercase">3. Invoices & Quotations Setup</h3>
+                                    <p class="text-xs text-cream/70 leading-relaxed">Choose default currency, tax/VAT rate, and banking details for generated quotes and invoices.</p>
+                                </div>
+                                <div class="space-y-3 text-xs">
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Currency Symbol</label>
+                                            <select id="setup-doc-currency" class="w-full bg-darkbg border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent">
+                                                <option value="R">ZAR (R)</option>
+                                                <option value="$">USD ($)</option>
+                                                <option value="€">EUR (€)</option>
+                                                <option value="£">GBP (£)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Tax / VAT Rate (%)</label>
+                                            <input type="number" id="setup-tax-rate" value="15" min="0" class="w-full bg-darkbg border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Banking & Payment Terms Note</label>
+                                        <textarea id="setup-doc-notes" rows="3" class="w-full bg-darkbg border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent">Bank: FNB | Acc: 62000000000 | Branch: 250655
+Standard 30 days payment terms apply.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 4: WhatsApp Message Templates -->
+                            <div id="setup-card-4" class="setup-card-step space-y-4 hidden">
+                                <div class="space-y-1">
+                                    <h3 class="text-sm font-bold font-mono text-accent uppercase">4. Automated WhatsApp Templates</h3>
+                                    <p class="text-xs text-cream/70 leading-relaxed">Customize automated pre-travel, during-stay concierge, and post-stay review messages for guests.</p>
+                                </div>
+                                <div class="space-y-3 text-xs">
+                                    <div>
+                                        <label class="block text-emerald-400 font-mono text-[9px] uppercase font-bold mb-1">Pre-Arrival Directions Message</label>
+                                        <textarea id="setup-wa-pre" rows="2" class="w-full bg-darkbg border border-cream/15 rounded-lg p-2 text-cream font-mono text-[10px] focus:outline-none focus:border-accent">${waTemplates.pre}</textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-emerald-400 font-mono text-[9px] uppercase font-bold mb-1">During-Stay Breakfast / Concierge Message</label>
+                                        <textarea id="setup-wa-during" rows="2" class="w-full bg-darkbg border border-cream/15 rounded-lg p-2 text-cream font-mono text-[10px] focus:outline-none focus:border-accent">${waTemplates.during}</textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-emerald-400 font-mono text-[9px] uppercase font-bold mb-1">Post-Checkout Review Request Message</label>
+                                        <textarea id="setup-wa-post" rows="2" class="w-full bg-darkbg border border-cream/15 rounded-lg p-2 text-cream font-mono text-[10px] focus:outline-none focus:border-accent">${waTemplates.post}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 5: OTA Rates Setup -->
+                            <div id="setup-card-5" class="setup-card-step space-y-4 hidden">
+                                <div class="space-y-1">
+                                    <h3 class="text-sm font-bold font-mono text-accent uppercase">5. OTA Rates & Channel Margins</h3>
+                                    <p class="text-xs text-cream/70 leading-relaxed">Specify target nightly payouts to calculate optimal gross listing prices across Booking.com, Airbnb, Expedia, etc.</p>
+                                </div>
+                                <div class="space-y-3 text-xs">
+                                    <div>
+                                        <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Target Net Payout Per Night</label>
+                                        <input type="number" id="setup-ota-net" value="2500" min="1" step="50" class="w-full bg-darkbg border border-cream/15 rounded-lg px-3 py-2 text-cream font-bold text-sm focus:outline-none focus:border-accent">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3 font-mono text-[10px]">
+                                        <div class="bg-darkbg p-2 rounded border border-cream/10">Booking.com: 15% Fee</div>
+                                        <div class="bg-darkbg p-2 rounded border border-cream/10">NightsBridge: 10% Fee</div>
+                                        <div class="bg-darkbg p-2 rounded border border-cream/10">Airbnb: 15% Fee</div>
+                                        <div class="bg-darkbg p-2 rounded border border-cream/10">Expedia: 18% Fee</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 6: Test Booking & 1-Click Automation Tutorial -->
+                            <div id="setup-card-6" class="setup-card-step space-y-4 hidden">
+                                <div class="space-y-1">
+                                    <h3 class="text-sm font-bold font-mono text-accent uppercase">6. Interactive Test Booking & 1-Click Checklist Automation</h3>
+                                    <p class="text-xs text-cream/70 leading-relaxed">Let's generate a test guest booking to demonstrate the instant 1-Click Stay Workflow automation!</p>
+                                </div>
+
+                                <div class="bg-darkbg border border-accent/30 p-4 rounded-xl space-y-3 text-xs">
+                                    <div class="flex justify-between items-center border-b border-cream/10 pb-2">
+                                        <span class="font-bold text-cream font-mono">Sample Booking: Sarah Jenkins</span>
+                                        <span class="text-[9px] font-mono bg-accent/20 border border-accent/40 text-cream px-2 py-0.5 rounded">Suite 1 (Deluxe Ocean)</span>
+                                    </div>
+                                    <p class="text-[11px] text-cream/60">Click the high-impact automation button below to execute quotes, invoices, and WhatsApp workflows with one click:</p>
+
+                                    <div class="pt-2 flex flex-col items-center gap-3">
+                                        <button onclick="triggerSetupOneClickAutomation()" id="btn-setup-oneclick" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-accent via-amber-600 to-emerald-600 text-white font-mono font-extrabold text-xs tracking-wider shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all btn-depth flex items-center justify-center gap-2">
+                                            <span>⚡ 1-CLICK AUTOMATE ALL WORKFLOW TASKS</span>
+                                        </button>
+                                        <div id="setup-automation-feedback" class="hidden text-emerald-400 font-mono text-xs font-bold text-center animate-bounce">
+                                            🎉 100% AUTOMATED! Quote, Invoice, and Guest Messages Dispatched!
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Step Action Footer Navigation -->
+                        <div class="flex justify-between items-center pt-2">
+                            <button onclick="changeSetupStep(-1)" id="btn-setup-prev" class="px-5 py-2.5 rounded-xl bg-darkbg border border-cream/15 text-cream/70 hover:text-cream text-xs font-bold font-mono tracking-wider disabled:opacity-30 disabled:pointer-events-none">
+                                ◀ BACK
+                            </button>
+                            <button onclick="changeSetupStep(1)" id="btn-setup-next" class="px-6 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-cream text-xs font-bold font-mono tracking-wider btn-depth">
+                                NEXT STEP ▶
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', setupHtml);
+            renderSetupRoomsList();
+            setSetupStep(1);
+        }
+
+        function setSetupStep(step) {
+            setupStepCurrent = step;
+            document.querySelectorAll('.setup-card-step').forEach(el => el.classList.add('hidden'));
+            const currentCard = document.getElementById(`setup-card-${step}`);
+            if (currentCard) currentCard.classList.remove('hidden');
+
+            const percent = Math.round((step / setupStepTotal) * 100);
+            document.getElementById('setup-progress-bar').style.width = `${percent}%`;
+            document.getElementById('setup-step-indicator').textContent = `Step ${step} of ${setupStepTotal}`;
+            document.getElementById('setup-step-percent').textContent = `${percent}% Complete`;
+
+            document.getElementById('btn-setup-prev').disabled = step === 1;
+            const btnNext = document.getElementById('btn-setup-next');
+            if (step === setupStepTotal) {
+                btnNext.textContent = 'FINISH SETUP & LAUNCH 🚀';
+                btnNext.className = 'px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold font-mono tracking-wider btn-depth';
+            } else {
+                btnNext.textContent = 'NEXT STEP ▶';
+                btnNext.className = 'px-6 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-cream text-xs font-bold font-mono tracking-wider btn-depth';
+            }
+        }
+
+        function changeSetupStep(dir) {
+            const target = setupStepCurrent + dir;
+            if (target >= 1 && target <= setupStepTotal) {
+                setSetupStep(target);
+            } else if (target > setupStepTotal) {
+                completeSetupTutorial();
+            }
+        }
+
+        function handleSetupLogoUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setupTempLogo = e.target.result;
+                const label = document.getElementById('setup-logo-label');
+                if (label) label.textContent = `✓ Selected Logo: ${file.name}`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderSetupRoomsList() {
+            const container = document.getElementById('setup-rooms-list-container');
+            if (!container) return;
+            container.innerHTML = '';
+            setupRoomsList.forEach((rm, idx) => {
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center bg-darkbg p-2 rounded-lg border border-cream/10 text-xs font-mono';
+                item.innerHTML = `
+                    <span class="text-cream">${rm}</span>
+                    <button onclick="removeSetupRoom(${idx})" class="text-red-400 hover:text-red-300 font-bold">&times;</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function addSetupRoom() {
+            const input = document.getElementById('setup-new-room-input');
+            const val = input ? input.value.trim() : '';
+            if (!val) return;
+            setupRoomsList.push(val);
+            input.value = '';
+            renderSetupRoomsList();
+        }
+
+        function removeSetupRoom(idx) {
+            setupRoomsList.splice(idx, 1);
+            renderSetupRoomsList();
+        }
+
+        function triggerSetupOneClickAutomation() {
+            const feedback = document.getElementById('setup-automation-feedback');
+            const btn = document.getElementById('btn-setup-oneclick');
+            if (feedback) feedback.classList.remove('hidden');
+            if (btn) {
+                btn.textContent = '⚡ AUTOMATED ALL WORKFLOWS!';
+                btn.className = 'w-full py-3.5 px-4 rounded-2xl bg-emerald-600 text-white font-mono font-extrabold text-xs tracking-wider shadow-2xl';
+            }
+        }
+
+        function exitSetupTutorial() {
+            if (confirm('Leave setup tutorial? You can return and configure your workspace anytime.')) {
+                const overlay = document.getElementById('setup-tutorial-overlay');
+                if (overlay) overlay.remove();
+                setUIMode('calendar');
+            }
+        }
+
+        function completeSetupTutorial() {
+            // Apply all inputs to company state
+            const compName = document.getElementById('setup-company-name')?.value.trim() || 'By Janno Studio';
+            const compEmail = document.getElementById('setup-company-email')?.value.trim() || '';
+            const compPhone = document.getElementById('setup-company-phone')?.value.trim() || '';
+            const currency = document.getElementById('setup-doc-currency')?.value || 'R';
+            const taxRate = document.getElementById('setup-tax-rate')?.value || '15';
+            const notes = document.getElementById('setup-doc-notes')?.value || '';
+            const waPre = document.getElementById('setup-wa-pre')?.value || waTemplates.pre;
+            const waDuring = document.getElementById('setup-wa-during')?.value || waTemplates.during;
+            const waPost = document.getElementById('setup-wa-post')?.value || waTemplates.post;
+            const otaNet = document.getElementById('setup-ota-net')?.value || '2500';
+
+            // Save user account setup state
+            const activeUser = getCurrentUser();
+            if (activeUser) {
+                const accounts = getAccountsDB();
+                const account = accounts.find(a => a.username.toLowerCase() === activeUser.toLowerCase());
+                if (account) {
+                    account.companyName = compName;
+                    account.logoBase64 = setupTempLogo;
+                    account.rooms = [...setupRoomsList];
+                    account.setupCompleted = true;
+                    saveAccountsDB(accounts);
+                }
+            }
+
+            // Apply to main document DOM elements
+            if (document.getElementById('company-name')) document.getElementById('company-name').value = compName;
+            if (document.getElementById('company-email')) document.getElementById('company-email').value = compEmail;
+            if (document.getElementById('company-phone')) document.getElementById('company-phone').value = compPhone;
+            if (document.getElementById('doc-currency')) document.getElementById('doc-currency').value = currency;
+            if (document.getElementById('tax-rate')) document.getElementById('tax-rate').value = taxRate;
+            if (document.getElementById('doc-notes')) document.getElementById('doc-notes').value = notes;
+            if (document.getElementById('ota-target-net')) document.getElementById('ota-target-net').value = otaNet;
+
+            waTemplates.pre = waPre;
+            waTemplates.during = waDuring;
+            waTemplates.post = waPost;
+            saveWhatsAppTemplates();
+
+            docLogoBase64 = setupTempLogo;
+            applyCompanyConfig({ companyName: compName, logoBase64: setupTempLogo });
+
+            // Create sample test stay if not already present
+            if (!staysList.some(s => s.guestName === 'Sarah Jenkins')) {
+                staysList.push({
+                    id: 'stay-test-1',
+                    guestId: 'sample-sarah',
+                    guestName: 'Sarah Jenkins',
+                    roomName: setupRoomsList[0] || 'Suite 1 (Deluxe Ocean)',
+                    checkin: new Date().toISOString().split('T')[0],
+                    checkout: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0],
+                    status: 'confirmed',
+                    workflowStatus: { quoteSent: true, invoiceSent: true, pre: true, during: true, post: true },
+                    customChecklist: [
+                        { id: 'tc-1', text: 'Welcome Fruit & Wine Basket', done: true },
+                        { id: 'tc-2', text: 'Late Checkout Request Noted', done: true }
+                    ]
+                });
+                saveStaysDatabase();
+            }
+
+            const overlay = document.getElementById('setup-tutorial-overlay');
+            if (overlay) overlay.remove();
+
+            setUIMode('calendar');
         }
 
         function showOnboardingOverlay() {
