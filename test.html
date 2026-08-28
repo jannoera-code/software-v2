@@ -148,30 +148,34 @@
     </div>
 
     <!-- Header -->
-    <header class="w-full max-w-7xl mx-auto px-6 py-4 border-b border-cream/10 flex justify-between items-center no-print relative z-20">
-        <div class="flex items-center gap-3">
-            <span id="header-company-name-container" class="font-brand text-2xl text-cream cursor-pointer" onclick="setUIMode('calendar')">By Janno<span class="text-accent">.</span></span>
-            <span class="h-4 w-px bg-cream/20"></span>
-            <span class="font-mono text-xs uppercase tracking-widest text-cream/40">Hospitality Booking & Pricing Suite</span>
+    <header class="w-full max-w-7xl mx-auto px-6 py-2.5 border-b border-cream/10 flex justify-between items-center no-print relative z-20">
+        <div class="flex items-center gap-2.5">
+            <span id="header-company-name-container" class="font-brand text-lg text-cream cursor-pointer hover:text-cream/90 transition-colors" onclick="setUIMode('calendar')">By Janno<span class="text-accent">.</span></span>
+            <span class="h-3.5 w-px bg-cream/20"></span>
+            <span class="font-mono text-[10px] uppercase tracking-wider text-cream/40">Hospitality Suite</span>
         </div>
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2.5">
             <!-- Mode Toggles: Light Mode & Personalized Mode -->
-            <div class="flex items-center gap-2 border border-cream/10 bg-darkcard/50 rounded-lg p-1 mr-2 text-xs font-mono">
-                <button id="toggle-light-mode" onclick="toggleLightMode()" class="px-2 py-1 rounded hover:bg-cream/10 transition-colors text-cream/70 hover:text-cream">☀️ Light Mode</button>
-                <button id="toggle-personal-mode" onclick="togglePersonalMode()" class="px-2 py-1 rounded hover:bg-cream/10 transition-colors text-cream/30 cursor-not-allowed" disabled title="Upload a logo first to enable Personalized mode">🎨 Personalized Mode</button>
+            <div class="flex items-center gap-1 border border-cream/10 bg-darkcard/50 rounded-md p-0.5 text-[10px] font-mono">
+                <button id="toggle-light-mode" onclick="toggleLightMode()" class="px-2 py-0.5 rounded hover:bg-cream/10 transition-colors text-cream/70 hover:text-cream">☀️ Light Mode</button>
+                <button id="toggle-personal-mode" onclick="togglePersonalMode()" class="px-2 py-0.5 rounded hover:bg-cream/10 transition-colors text-cream/30 cursor-not-allowed" disabled title="Upload a logo first to enable Personalized mode">🎨 Dynamic Palette</button>
             </div>
             
-            <button onclick="launchSetupTutorial()" class="text-xs font-mono text-accent hover:text-cream flex items-center gap-1.5 bg-accent/20 hover:bg-accent/40 px-3 py-1.5 rounded-lg border border-accent/40 font-bold transition-all">
-                🚀 Launch Setup & Tutorial
-            </button>
-            <button onclick="setUIMode('calendar')" class="text-xs font-mono text-cream/60 hover:text-cream flex items-center gap-1.5 bg-darkcard px-3 py-1.5 rounded-lg border border-cream/10">
-                📅 Booking Calendar (Home)
+<button onclick="launchSetupTutorial()" class="text-xs font-mono text-accent hover:text-cream flex items-center gap-1.5 bg-accent/20 border border-accent/40 px-2.5 py-1 rounded">
+    🚀 Launch Setup & Tutorial
+</button>
+<button onclick="setUIMode('calendar')" class="text-xs font-mono text-cream/60 hover:text-cream flex items-center gap-1.5 bg-darkcard px-2.5 py-1 rounded">
+    📅 Booking Calendar (Home)
+</button>
+<button onclick="handleSignOut()" class="text-xs font-mono text-red-400 hover:text-red-300 flex items-center gap-1.5 bg-darkcard px-2.5 py-1 rounded">
+    🚪 Sign Out
+</button>
             </button>
             <button onclick="handleSignOut()" class="text-xs font-mono text-red-400 hover:text-red-300 flex items-center gap-1.5 bg-darkcard px-3 py-1.5 rounded-lg border border-red-500/20 transition-colors">
                 🚪 Sign Out
             </button>
             <span id="header-logo-studio-container" class="flex items-center">
-                <a href="index.html" class="text-xs font-mono tracking-widest uppercase hover:text-accent transition-colors">Back to Studio</a>
+                <a href="index.html" class="text-[10px] font-mono tracking-wider uppercase hover:text-accent transition-colors">Studio</a>
             </span>
         </div>
     </header>
@@ -179,7 +183,7 @@
     <!-- RIGHT-SIDE HOVER/EXPANDABLE NAVIGATION MENU DRAWER -->
     <div id="right-nav-drawer" class="fixed top-20 right-0 z-50 group flex items-start no-print transition-all duration-300">
         <!-- Drawer Toggle Tab -->
-        <button id="drawer-toggle-btn" onclick="toggleNavDrawer()" class="bg-accent hover:bg-accent-hover text-cream font-mono text-xs font-bold py-3 px-2 rounded-l-xl shadow-2xl flex flex-col items-center gap-2 border-l border-t border-b border-cream/20 cursor-pointer">
+        <button id="drawer-toggle-btn" onclick="toggleNavDrawer()" aria-label="Toggle system menu" class="bg-accent hover:bg-accent-hover text-cream font-mono text-xs font-bold py-3 px-2 rounded-l-xl shadow-2xl flex flex-col items-center gap-2 border-l border-t border-b border-cream/20 cursor-pointer">
             <span>⚙️</span>
             <span class="writing-mode-vertical uppercase text-[9px] tracking-widest" style="writing-mode: vertical-rl;">SYSTEM MENU</span>
         </button>
@@ -253,7 +257,7 @@
                     <select id="template-selector" class="flex-1 bg-darkbg border border-cream/15 rounded-lg px-2.5 py-1.5 text-cream text-xs focus:outline-none focus:border-accent font-semibold" onchange="loadTemplate(this.value)">
                         <option value="">-- Select Saved Template --</option>
                     </select>
-                    <button onclick="deleteSelectedTemplate()" title="Delete Template" class="text-xs text-red-400 hover:text-red-300 border border-red-500/20 px-2 py-1 rounded bg-darkbg">🗑</button>
+                    <button onclick="deleteSelectedTemplate()" title="Delete Template" aria-label="Delete selected template" class="text-xs text-red-400 hover:text-red-300 border border-red-500/20 px-2 py-1 rounded bg-darkbg">🗑</button>
                 </div>
             </div>
 
@@ -284,10 +288,11 @@
                             </div>
                             <div>
                                 <label class="block text-cream/60 mb-1 font-mono text-[10px] uppercase font-bold">Logo Size</label>
-                                <select id="logo-size" class="w-full bg-darkbg border border-cream/15 rounded-lg px-2 py-2 text-cream focus:outline-none focus:border-accent" onchange="updatePreview('preview-logo')">
-                                    <option value="small">Small</option>
-                                    <option value="medium" selected>Medium</option>
-                                    <option value="large">Large</option>
+                                <select id="logo-size" class="w-full bg-darkbg border border-cream/15 rounded-lg px-2 py-2 text-cream focus:outline-none focus:border-accent font-mono text-xs" onchange="updatePreview('preview-logo')">
+                                    <option value="small">Small (32px)</option>
+                                    <option value="medium">Medium (48px)</option>
+                                    <option value="large">Large (80px)</option>
+                                    <option value="xlarge" selected>Extra Large (112px)</option>
                                 </select>
                             </div>
                         </div>
@@ -432,7 +437,7 @@ Standard 30 days payment terms apply.</textarea>
                                 <select id="palette-selector" class="flex-1 bg-darkbg border border-cream/15 rounded-lg px-2 py-1.5 text-cream font-mono text-[10px] focus:outline-none focus:border-accent" onchange="loadCustomPalette(this.value)">
                                     <option value="">-- Load Saved / Preset Color Palette --</option>
                                 </select>
-                                <button onclick="deleteSelectedPalette()" title="Delete Custom Palette" class="text-[10px] text-red-400 hover:text-red-300 border border-cream/10 px-2 py-1 rounded bg-darkbg">🗑</button>
+                                <button onclick="deleteSelectedPalette()" title="Delete Custom Palette" aria-label="Delete selected custom palette" class="text-[10px] text-red-400 hover:text-red-300 border border-cream/10 px-2 py-1 rounded bg-darkbg">🗑</button>
                             </div>
 
                             <div id="custom-color-pickers" class="grid grid-cols-2 gap-3 text-[10px] opacity-40 pointer-events-none transition-opacity">
@@ -842,7 +847,28 @@ Standard 30 days payment terms apply.</textarea>
                         <span class="text-[9px] font-mono text-accent uppercase tracking-widest font-bold">HOSPITALITY CRM</span>
                         <h3 class="text-sm font-bold text-cream mt-0.5">📅 Landscape Booking Calendar & Stay Checklists</h3>
                     </div>
-                    <button onclick="openNewStayModal()" class="btn-depth bg-accent hover:bg-accent-hover text-cream px-3 py-1.5 rounded-lg font-mono text-[10px] font-bold">+ Create New Stay Booking</button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleRoomManagerModal()" class="btn-depth bg-darkbg hover:bg-cream/10 border border-cream/15 text-cream px-3 py-1.5 rounded-lg font-mono text-[10px] flex items-center gap-1.5">⚙️ Manage Rooms</button>
+                        <button onclick="openNewStayModal()" class="btn-depth bg-accent hover:bg-accent-hover text-cream px-3 py-1.5 rounded-lg font-mono text-[10px] font-bold">+ Create New Stay Booking</button>
+                    </div>
+                </div>
+
+
+                <!-- Custom Room Configuration Panel -->
+                <div id="room-manager-container" class="bg-darkbg/80 border border-accent/40 p-4 rounded-xl space-y-3 hidden">
+                    <div class="flex justify-between items-center border-b border-cream/10 pb-2">
+                        <span class="font-mono text-[10px] text-accent uppercase font-bold">⚙️ Room Setup & Custom Room Management</span>
+                        <button onclick="toggleRoomManagerModal()" class="text-[9px] font-mono text-cream/40 hover:text-cream">Close</button>
+                    </div>
+                    <p class="text-[10px] text-cream/60 font-mono">Add, edit, or remove your property rooms. Configured rooms will directly replace the default rooms on the booking calendar.</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="new-room-input" placeholder="e.g. Executive Ocean Suite 5" class="flex-1 bg-darkbg border border-cream/15 rounded px-3 py-1.5 text-cream text-xs focus:outline-none focus:border-accent font-mono">
+                        <button onclick="addConfiguredRoom()" class="bg-accent hover:bg-accent-hover text-cream px-3 py-1.5 rounded font-mono text-[10px] font-bold uppercase">+ Add Room</button>
+                        <button onclick="resetRoomsToDefault()" class="bg-darkbg border border-cream/20 text-cream/60 hover:text-cream px-2.5 py-1.5 rounded font-mono text-[10px]">Reset Defaults</button>
+                    </div>
+                    <div id="room-manager-list" class="space-y-1.5 max-h-44 overflow-y-auto custom-scroll pt-1">
+                        <!-- Rendered dynamically -->
+                    </div>
                 </div>
 
                 <!-- Create/Edit Stay Form Inline -->
@@ -891,10 +917,23 @@ Standard 30 days payment terms apply.</textarea>
                 <div class="bg-darkbg/40 border border-cream/10 p-4 rounded-xl space-y-3 overflow-x-auto custom-scroll">
                     <div class="flex justify-between items-center mb-2 border-b border-cream/10 pb-3">
                         <div class="flex items-center gap-3 font-mono">
-                            <button onclick="changeCalendarMonth(-1)" class="bg-darkbg hover:bg-accent/20 border border-cream/15 text-cream px-2.5 py-1 rounded text-xs">◀ Prev Month</button>
-                            <span id="calendar-month-heading" class="text-sm font-bold text-cream uppercase tracking-wider">September 2026</span>
-                            <button onclick="changeCalendarMonth(1)" class="bg-darkbg hover:bg-accent/20 border border-cream/15 text-cream px-2.5 py-1 rounded text-xs">Next Month ▶</button>
+                            <div id="calendar-month-nav-group" class="flex items-center gap-2">
+                                <button onclick="changeCalendarMonth(-1)" class="bg-darkbg hover:bg-accent/20 border border-cream/15 text-cream px-2.5 py-1 rounded text-xs">◀ Prev Month</button>
+                                <span id="calendar-month-heading" class="text-sm font-bold text-cream uppercase tracking-wider">September 2026</span>
+                                <button onclick="changeCalendarMonth(1)" class="bg-darkbg hover:bg-accent/20 border border-cream/15 text-cream px-2.5 py-1 rounded text-xs">Next Month ▶</button>
+                            </div>
                             <button onclick="resetCalendarToCurrentMonth()" class="bg-accent/20 border border-accent/40 text-cream px-2 py-1 rounded text-[10px]">Today</button>
+
+                            <!-- View Mode Selector (Single Month vs Expanded Multi-Month) -->
+                            <div class="flex items-center gap-1.5 border border-cream/15 bg-darkbg rounded-lg p-0.5 ml-2">
+                                <button id="btn-cal-mode-single" onclick="setCalendarViewMode('single')" class="px-2 py-1 rounded text-[10px] bg-accent text-cream font-bold">1 Month</button>
+                                <button id="btn-cal-mode-expanded" onclick="setCalendarViewMode('expanded')" class="px-2 py-1 rounded text-[10px] text-cream/70 hover:text-cream">↔ Expand Calendar</button>
+                            </div>
+                            <select id="calendar-months-span" class="hidden bg-darkbg border border-cream/15 rounded px-2 py-1 text-cream text-[10px] font-mono focus:outline-none focus:border-accent" onchange="changeCalendarMonthsSpan(this.value)">
+                                <option value="3" selected>Show 3 Months</option>
+                                <option value="6">Show 6 Months</option>
+                                <option value="12">Show Full Year (12M)</option>
+                            </select>
                         </div>
                         <div class="flex items-center gap-3 font-mono text-[9px]">
                             <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Stay Confirmed</span>
@@ -968,6 +1007,121 @@ Standard 30 days payment terms apply.</textarea>
             { id: 'preset-ocean', name: 'Ocean Resort Blue (Preset)', colors: { bg: '#F0F9FF', text: '#0C4A6E', accent: '#0284C7', sec: '#BAE6FD' } }
         ];
 
+
+        // Custom Configured Rooms State
+        let roomsList = [];
+        const defaultRooms = [
+            'Suite 1 (Deluxe Ocean)',
+            'Suite 2 (Honeymoon)',
+            'Room 3 (Garden View)',
+            'Room 4 (Penthouse)',
+            'Villa Beachfront'
+        ];
+
+        function loadRoomsDatabase() {
+            try {
+                const data = localStorage.getItem('byjanno_rooms_db');
+                if (data) {
+                    roomsList = JSON.parse(data);
+                } else {
+                    roomsList = [...defaultRooms];
+                    saveRoomsDatabase();
+                }
+            } catch (e) {
+                roomsList = [...defaultRooms];
+            }
+            populateStayRoomDropdown();
+            renderRoomManagerList();
+        }
+
+        function saveRoomsDatabase() {
+            try {
+                localStorage.setItem('byjanno_rooms_db', JSON.stringify(roomsList));
+            } catch (e) {
+                console.error('Rooms save error:', e);
+            }
+        }
+
+        function populateStayRoomDropdown() {
+            const sel = document.getElementById('stay-room-name');
+            if (!sel) return;
+            const currentVal = sel.value;
+            sel.innerHTML = '';
+            roomsList.forEach(room => {
+                const opt = document.createElement('option');
+                opt.value = room;
+                opt.textContent = room;
+                sel.appendChild(opt);
+            });
+            if (currentVal && roomsList.includes(currentVal)) {
+                sel.value = currentVal;
+            }
+        }
+
+        function toggleRoomManagerModal() {
+            const container = document.getElementById('room-manager-container');
+            if (container) {
+                container.classList.toggle('hidden');
+                renderRoomManagerList();
+            }
+        }
+
+        function renderRoomManagerList() {
+            const container = document.getElementById('room-manager-list');
+            if (!container) return;
+            container.innerHTML = '';
+            roomsList.forEach((room, idx) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-darkbg/60 border border-cream/10 px-3 py-1.5 rounded-lg text-xs font-mono';
+                div.innerHTML = `
+                    <span class="text-cream font-bold">${room}</span>
+                    <button onclick="deleteConfiguredRoom(${idx})" class="text-red-400 hover:text-red-300 text-[10px] font-mono px-2 py-0.5 rounded border border-red-500/20 bg-darkbg">Delete</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function addConfiguredRoom() {
+            const input = document.getElementById('new-room-input');
+            if (!input) return;
+            const roomName = input.value.trim();
+            if (!roomName) return;
+            if (roomsList.includes(roomName)) {
+                alert('This room already exists!');
+                return;
+            }
+            roomsList.push(roomName);
+            saveRoomsDatabase();
+            input.value = '';
+            renderRoomManagerList();
+            populateStayRoomDropdown();
+            renderBookingCalendar();
+        }
+
+        function deleteConfiguredRoom(idx) {
+            if (roomsList.length <= 1) {
+                alert('You must have at least one room configured.');
+                return;
+            }
+            if (confirm('Delete room "' + roomsList[idx] + '"?')) {
+                roomsList.splice(idx, 1);
+                saveRoomsDatabase();
+                renderRoomManagerList();
+                populateStayRoomDropdown();
+                renderBookingCalendar();
+            }
+        }
+
+        function resetRoomsToDefault() {
+            if (confirm('Reset rooms to default system list?')) {
+                roomsList = [...defaultRooms];
+                saveRoomsDatabase();
+                renderRoomManagerList();
+                populateStayRoomDropdown();
+                renderBookingCalendar();
+            }
+        }
+
         // WhatsApp Templates State
         let waTemplates = {
             pre: "Hi {GUEST_NAME}! We're thrilled to welcome you to {COMPANY_NAME} for your stay in {ROOM} from {CHECKIN} to {CHECKOUT}. Directions & Check-in info: https://byjanno.co.za/welcome",
@@ -993,6 +1147,37 @@ Standard 30 days payment terms apply.</textarea>
         // Current view date state for calendar month-by-month navigation
         let currentCalendarDate = new Date();
 
+        // Calendar View Mode State (single | expanded)
+        let calendarViewMode = 'single';
+        let calendarMonthsSpan = 3;
+
+        function setCalendarViewMode(mode) {
+            calendarViewMode = mode;
+            const btnSingle = document.getElementById('btn-cal-mode-single');
+            const btnExpanded = document.getElementById('btn-cal-mode-expanded');
+            const spanSel = document.getElementById('calendar-months-span');
+            const navGroup = document.getElementById('calendar-month-nav-group');
+
+            if (mode === 'expanded') {
+                btnSingle.className = 'px-2 py-1 rounded text-[10px] text-cream/70 hover:text-cream';
+                btnExpanded.className = 'px-2 py-1 rounded text-[10px] bg-accent text-cream font-bold';
+                if (spanSel) spanSel.classList.remove('hidden');
+                if (navGroup) navGroup.classList.add('hidden');
+            } else {
+                btnSingle.className = 'px-2 py-1 rounded text-[10px] bg-accent text-cream font-bold';
+                btnExpanded.className = 'px-2 py-1 rounded text-[10px] text-cream/70 hover:text-cream';
+                if (spanSel) spanSel.classList.add('hidden');
+                if (navGroup) navGroup.classList.remove('hidden');
+            }
+            renderBookingCalendar();
+        }
+
+        function changeCalendarMonthsSpan(val) {
+            calendarMonthsSpan = parseInt(val) || 3;
+            renderBookingCalendar();
+        }
+
+
         // Initialize App State
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
@@ -1001,6 +1186,7 @@ Standard 30 days payment terms apply.</textarea>
             document.getElementById('doc-date-issued').value = today.toISOString().split('T')[0];
             document.getElementById('doc-date-due').value = nextMonth.toISOString().split('T')[0];
 
+            loadRoomsDatabase();
             loadGuestsDatabase();
             loadStaysDatabase();
             loadCustomPalettesDatabase();
@@ -1435,72 +1621,167 @@ Standard 30 days payment terms apply.</textarea>
             visualGridContainer.innerHTML = '';
             checklistsContainer.innerHTML = '';
 
-            const year = currentCalendarDate.getFullYear();
-            const month = currentCalendarDate.getMonth();
+            const rooms = roomsList && roomsList.length > 0 ? roomsList : defaultRooms;
 
-            if (headingEl) {
-                const monthName = currentCalendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                headingEl.textContent = monthName;
-            }
+            if (calendarViewMode === 'expanded') {
+                // Multi-Month Continuous Expanded View
+                const startYear = currentCalendarDate.getFullYear();
+                const startMonth = currentCalendarDate.getMonth();
 
-            // Render full month days columns
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const rooms = ['Suite 1 (Deluxe Ocean)', 'Suite 2 (Honeymoon)', 'Room 3 (Garden View)', 'Room 4 (Penthouse)', 'Villa Beachfront'];
-
-            let headerDaysHtml = '';
-            for (let day = 1; day <= daysInMonth; day++) {
-                const d = new Date(year, month, day);
-                const weekdayLetter = d.toLocaleDateString('en-US', { weekday: 'narrow' });
-                headerDaysHtml += `
-                    <div class="text-center font-mono text-[8px] border-l border-cream/5 py-1 flex-1 min-w-[28px] ${d.getDay() === 0 || d.getDay() === 6 ? 'bg-cream/5 text-accent font-bold' : 'text-cream/40'}">
-                        <div>${weekdayLetter}</div>
-                        <div>${day}</div>
-                    </div>
-                `;
-            }
-
-            let gridRowsHtml = `
-                <div class="flex border-b border-cream/10 bg-darkbg/80">
-                    <div class="w-44 p-2 font-mono text-[9px] uppercase font-bold text-accent">Room / Suite</div>
-                    <div class="flex-1 flex">${headerDaysHtml}</div>
-                </div>
-            `;
-
-            rooms.forEach(room => {
-                const roomStays = staysList.filter(s => s.roomName === room);
-                let dayCellsHtml = '';
-
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const currentDayDate = new Date(year, month, day);
-                    // Format as YYYY-MM-DD
-                    const yearStr = currentDayDate.getFullYear();
-                    const monthStr = String(currentDayDate.getMonth() + 1).padStart(2, '0');
-                    const dayStr = String(day).padStart(2, '0');
-                    const dateFormatted = `${yearStr}-${monthStr}-${dayStr}`;
-
-                    const activeStay = roomStays.find(s => s.checkin <= dateFormatted && s.checkout >= dateFormatted);
-
-                    if (activeStay) {
-                        const isStart = activeStay.checkin === dateFormatted;
-                        dayCellsHtml += `
-                            <div class="flex-1 min-w-[28px] bg-emerald-600/40 border-l border-emerald-500/40 py-1.5 px-0.5 relative text-[8px] font-mono text-emerald-200 truncate cursor-pointer hover:bg-emerald-600/60 transition-colors" title="${activeStay.guestName} (${activeStay.checkin} to ${activeStay.checkout})">
-                                ${isStart ? `<span class="font-bold text-cream">${activeStay.guestName.split(' ')[0]}</span>` : '•'}
-                            </div>
-                        `;
-                    } else {
-                        dayCellsHtml += `<div class="flex-1 min-w-[28px] border-l border-cream/5 py-1.5 hover:bg-cream/5 transition-colors"></div>`;
-                    }
+                if (headingEl) {
+                    const startMonthName = currentCalendarDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    const endDate = new Date(startYear, startMonth + calendarMonthsSpan - 1, 1);
+                    const endMonthName = endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    headingEl.textContent = `${startMonthName} — ${endMonthName} (${calendarMonthsSpan} Months Expanded View)`;
                 }
 
-                gridRowsHtml += `
-                    <div class="flex border-b border-cream/5 hover:bg-darkbg/60 transition-colors">
-                        <div class="w-44 p-2 font-mono text-[9px] text-cream/80 font-bold truncate flex-shrink-0">${room}</div>
-                        <div class="flex-1 flex overflow-hidden">${dayCellsHtml}</div>
+                // Collect list of month dates
+                let monthsList = [];
+                for (let m = 0; m < calendarMonthsSpan; m++) {
+                    monthsList.push(new Date(startYear, startMonth + m, 1));
+                }
+
+                let monthsHeaderHtml = '';
+                let daysHeaderHtml = '';
+
+                monthsList.forEach(mDate => {
+                    const y = mDate.getFullYear();
+                    const m = mDate.getMonth();
+                    const daysInM = new Date(y, m + 1, 0).getDate();
+                    const mLabel = mDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+                    monthsHeaderHtml += `<div class="font-mono text-[10px] uppercase font-bold text-accent text-center border-l border-cream/10 py-1" style="flex: ${daysInM};">${mLabel}</div>`;
+
+                    for (let day = 1; day <= daysInM; day++) {
+                        const d = new Date(y, m, day);
+                        const weekdayLetter = d.toLocaleDateString('en-US', { weekday: 'narrow' });
+                        daysHeaderHtml += `
+                            <div class="text-center font-mono text-[8px] border-l border-cream/5 py-1 flex-1 min-w-[28px] ${d.getDay() === 0 || d.getDay() === 6 ? 'bg-cream/5 text-accent font-bold' : 'text-cream/40'}">
+                                <div>${weekdayLetter}</div>
+                                <div>${day}</div>
+                            </div>
+                        `;
+                    }
+                });
+
+                let gridRowsHtml = `
+                    <div class="flex border-b border-cream/10 bg-darkbg/90">
+                        <div class="w-44 p-2 font-mono text-[9px] uppercase font-bold text-accent flex-shrink-0">Month / Year</div>
+                        <div class="flex-1 flex overflow-hidden">${monthsHeaderHtml}</div>
+                    </div>
+                    <div class="flex border-b border-cream/10 bg-darkbg/80">
+                        <div class="w-44 p-2 font-mono text-[9px] uppercase font-bold text-accent flex-shrink-0">Room / Suite</div>
+                        <div class="flex-1 flex overflow-hidden">${daysHeaderHtml}</div>
                     </div>
                 `;
-            });
 
-            visualGridContainer.innerHTML = gridRowsHtml;
+                rooms.forEach(room => {
+                    const roomStays = staysList.filter(s => s.roomName === room);
+                    let dayCellsHtml = '';
+
+                    monthsList.forEach(mDate => {
+                        const y = mDate.getFullYear();
+                        const m = mDate.getMonth();
+                        const daysInM = new Date(y, m + 1, 0).getDate();
+
+                        for (let day = 1; day <= daysInM; day++) {
+                            const currentDayDate = new Date(y, m, day);
+                            const yearStr = currentDayDate.getFullYear();
+                            const monthStr = String(currentDayDate.getMonth() + 1).padStart(2, '0');
+                            const dayStr = String(day).padStart(2, '0');
+                            const dateFormatted = `${yearStr}-${monthStr}-${dayStr}`;
+
+                            const activeStay = roomStays.find(s => s.checkin <= dateFormatted && s.checkout >= dateFormatted);
+
+                            if (activeStay) {
+                                const isStart = activeStay.checkin === dateFormatted;
+                                dayCellsHtml += `
+                                    <div class="flex-1 min-w-[28px] h-8 bg-emerald-600/40 border-l border-emerald-500/40 flex items-center justify-center px-0.5 relative text-[8px] font-mono text-emerald-200 truncate cursor-pointer hover:bg-emerald-600/60 transition-colors box-border" title="${activeStay.guestName} (${activeStay.checkin} to ${activeStay.checkout})">
+                                        ${isStart ? `<span class="font-bold text-cream">${activeStay.guestName.split(' ')[0]}</span>` : '•'}
+                                    </div>
+                                `;
+                            } else {
+                                dayCellsHtml += `<div class="flex-1 min-w-[28px] h-8 border-l border-cream/5 flex items-center justify-center hover:bg-cream/5 transition-colors box-border"></div>`;
+                            }
+                        }
+                    });
+
+                    gridRowsHtml += `
+                        <div class="flex border-b border-cream/5 hover:bg-darkbg/60 transition-colors">
+                            <div class="w-44 p-2 font-mono text-[9px] text-cream/80 font-bold truncate flex-shrink-0 flex items-center">${room}</div>
+                            <div class="flex-1 flex overflow-hidden">${dayCellsHtml}</div>
+                        </div>
+                    `;
+                });
+
+                visualGridContainer.innerHTML = gridRowsHtml;
+            } else {
+                // Single Month Standard View
+                const year = currentCalendarDate.getFullYear();
+                const month = currentCalendarDate.getMonth();
+
+                if (headingEl) {
+                    const monthName = currentCalendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    headingEl.textContent = monthName;
+                }
+
+                // Render full month days columns
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                let headerDaysHtml = '';
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const d = new Date(year, month, day);
+                    const weekdayLetter = d.toLocaleDateString('en-US', { weekday: 'narrow' });
+                    headerDaysHtml += `
+                        <div class="text-center font-mono text-[8px] border-l border-cream/5 py-1 flex-1 min-w-[28px] ${d.getDay() === 0 || d.getDay() === 6 ? 'bg-cream/5 text-accent font-bold' : 'text-cream/40'}">
+                            <div>${weekdayLetter}</div>
+                            <div>${day}</div>
+                        </div>
+                    `;
+                }
+
+                let gridRowsHtml = `
+                    <div class="flex border-b border-cream/10 bg-darkbg/80">
+                        <div class="w-44 p-2 font-mono text-[9px] uppercase font-bold text-accent flex-shrink-0">Room / Suite</div>
+                        <div class="flex-1 flex">${headerDaysHtml}</div>
+                    </div>
+                `;
+
+                rooms.forEach(room => {
+                    const roomStays = staysList.filter(s => s.roomName === room);
+                    let dayCellsHtml = '';
+
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const currentDayDate = new Date(year, month, day);
+                        const yearStr = currentDayDate.getFullYear();
+                        const monthStr = String(currentDayDate.getMonth() + 1).padStart(2, '0');
+                        const dayStr = String(day).padStart(2, '0');
+                        const dateFormatted = `${yearStr}-${monthStr}-${dayStr}`;
+
+                        const activeStay = roomStays.find(s => s.checkin <= dateFormatted && s.checkout >= dateFormatted);
+
+                        if (activeStay) {
+                            const isStart = activeStay.checkin === dateFormatted;
+                            dayCellsHtml += `
+                                <div class="flex-1 min-w-[28px] h-8 bg-emerald-600/40 border-l border-emerald-500/40 flex items-center justify-center px-0.5 relative text-[8px] font-mono text-emerald-200 truncate cursor-pointer hover:bg-emerald-600/60 transition-colors box-border" title="${activeStay.guestName} (${activeStay.checkin} to ${activeStay.checkout})">
+                                    ${isStart ? `<span class="font-bold text-cream">${activeStay.guestName.split(' ')[0]}</span>` : '•'}
+                                </div>
+                            `;
+                        } else {
+                            dayCellsHtml += `<div class="flex-1 min-w-[28px] h-8 border-l border-cream/5 flex items-center justify-center hover:bg-cream/5 transition-colors box-border"></div>`;
+                        }
+                    }
+
+                    gridRowsHtml += `
+                        <div class="flex border-b border-cream/5 hover:bg-darkbg/60 transition-colors">
+                            <div class="w-44 p-2 font-mono text-[9px] text-cream/80 font-bold truncate flex-shrink-0 flex items-center">${room}</div>
+                            <div class="flex-1 flex overflow-hidden">${dayCellsHtml}</div>
+                        </div>
+                    `;
+                });
+
+                visualGridContainer.innerHTML = gridRowsHtml;
+            }
 
             // Render Stay-Based Checklists Cards
             if (staysList.length === 0) {
@@ -1555,49 +1836,49 @@ Standard 30 days payment terms apply.</textarea>
 
                         <!-- Stay Specific Tasks & Checklist -->
                         <div class="space-y-1.5 text-[10px] font-mono">
-                            <!-- 1. Quote -->
+                            <!-- 1. Quote (1-Click Action per item) -->
                             <div class="flex justify-between items-center bg-darkbg/50 p-1.5 rounded border border-cream/5">
                                 <div class="flex items-center gap-1.5">
                                     <input type="checkbox" ${hasSentQuote ? 'checked' : ''} onchange="toggleStayWorkflowStep('${stay.id}', 'quoteSent')" class="accent-accent">
                                     <span class="${hasSentQuote ? 'line-through text-cream/40' : 'text-cream/80'}">1. Quote Dispatch</span>
                                 </div>
-                                <span class="text-[8px] px-1.5 py-0.5 rounded ${hasSentQuote ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/10 text-amber-400'}">${hasSentQuote ? '✓ SENT' : 'PENDING'}</span>
+                                <button onclick="oneClickActionQuote('${stay.id}')" class="text-[8px] font-mono bg-accent/20 border border-accent/40 text-cream hover:bg-accent/50 px-2 py-0.5 rounded font-bold">⚡ 1-Click Quote</button>
                             </div>
 
-                            <!-- 2. Invoice -->
+                            <!-- 2. Invoice (1-Click Action per item) -->
                             <div class="flex justify-between items-center bg-darkbg/50 p-1.5 rounded border border-cream/5">
                                 <div class="flex items-center gap-1.5">
                                     <input type="checkbox" ${hasSentInvoice ? 'checked' : ''} onchange="toggleStayWorkflowStep('${stay.id}', 'invoiceSent')" class="accent-accent">
                                     <span class="${hasSentInvoice ? 'line-through text-cream/40' : 'text-cream/80'}">2. Invoice Dispatch</span>
                                 </div>
-                                <span class="text-[8px] px-1.5 py-0.5 rounded ${hasSentInvoice ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/10 text-amber-400'}">${hasSentInvoice ? '✓ SENT' : 'PENDING'}</span>
+                                <button onclick="oneClickActionInvoice('${stay.id}')" class="text-[8px] font-mono bg-accent/20 border border-accent/40 text-cream hover:bg-accent/50 px-2 py-0.5 rounded font-bold">⚡ 1-Click Invoice</button>
                             </div>
 
-                            <!-- 3. Pre-Travel WA -->
+                            <!-- 3. Pre-Travel WA (1-Click Action per item) -->
                             <div class="flex justify-between items-center bg-darkbg/50 p-1.5 rounded border border-cream/5">
                                 <div class="flex items-center gap-1.5">
                                     <input type="checkbox" ${preTravelDone ? 'checked' : ''} onchange="toggleStayWorkflowStep('${stay.id}', 'pre')" class="accent-accent">
                                     <span class="${preTravelDone ? 'line-through text-cream/40' : 'text-cream/80'}">3. Pre-Travel WA</span>
                                 </div>
-                                <button onclick="dispatchWhatsAppToGuest('${stay.guestId || 'sample'}', 'pre')" class="text-[8px] bg-emerald-600/30 text-emerald-200 px-1.5 py-0.5 rounded">💬 Send</button>
+                                <button onclick="oneClickActionWA('${stay.id}', 'pre')" class="text-[8px] font-mono bg-emerald-600/30 border border-emerald-500/40 text-emerald-200 hover:bg-emerald-600/50 px-2 py-0.5 rounded font-bold">⚡ 1-Click WA</button>
                             </div>
 
-                            <!-- 4. During WA -->
+                            <!-- 4. During WA (1-Click Action per item) -->
                             <div class="flex justify-between items-center bg-darkbg/50 p-1.5 rounded border border-cream/5">
                                 <div class="flex items-center gap-1.5">
                                     <input type="checkbox" ${duringTravelDone ? 'checked' : ''} onchange="toggleStayWorkflowStep('${stay.id}', 'during')" class="accent-accent">
                                     <span class="${duringTravelDone ? 'line-through text-cream/40' : 'text-cream/80'}">4. During WA Concierge</span>
                                 </div>
-                                <button onclick="dispatchWhatsAppToGuest('${stay.guestId || 'sample'}', 'during')" class="text-[8px] bg-emerald-600/30 text-emerald-200 px-1.5 py-0.5 rounded">💬 Send</button>
+                                <button onclick="oneClickActionWA('${stay.id}', 'during')" class="text-[8px] font-mono bg-emerald-600/30 border border-emerald-500/40 text-emerald-200 hover:bg-emerald-600/50 px-2 py-0.5 rounded font-bold">⚡ 1-Click WA</button>
                             </div>
 
-                            <!-- 5. Post WA -->
+                            <!-- 5. Post WA (1-Click Action per item) -->
                             <div class="flex justify-between items-center bg-darkbg/50 p-1.5 rounded border border-cream/5">
                                 <div class="flex items-center gap-1.5">
                                     <input type="checkbox" ${postTravelDone ? 'checked' : ''} onchange="toggleStayWorkflowStep('${stay.id}', 'post')" class="accent-accent">
                                     <span class="${postTravelDone ? 'line-through text-cream/40' : 'text-cream/80'}">5. Post-Stay WA Review</span>
                                 </div>
-                                <button onclick="dispatchWhatsAppToGuest('${stay.guestId || 'sample'}', 'post')" class="text-[8px] bg-emerald-600/30 text-emerald-200 px-1.5 py-0.5 rounded">💬 Send</button>
+                                <button onclick="oneClickActionWA('${stay.id}', 'post')" class="text-[8px] font-mono bg-emerald-600/30 border border-emerald-500/40 text-emerald-200 hover:bg-emerald-600/50 px-2 py-0.5 rounded font-bold">⚡ 1-Click WA</button>
                             </div>
 
                             <!-- Custom Stay Tasks -->
@@ -1607,7 +1888,7 @@ Standard 30 days payment terms apply.</textarea>
                                         <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleStayCustomChecklistItem('${stay.id}', '${t.id}')" class="accent-accent">
                                         <span class="${t.done ? 'line-through text-cream/40' : 'text-cream/80'}">${t.text}</span>
                                     </div>
-                                    <button onclick="deleteStayCustomChecklistItem('${stay.id}', '${t.id}')" class="text-[8px] text-red-400 hover:text-red-300">&times;</button>
+                                    <button onclick="deleteStayCustomChecklistItem('${stay.id}', '${t.id}')" aria-label="Delete task" class="text-[8px] text-red-400 hover:text-red-300">&times;</button>
                                 </div>
                             `).join('')}
 
@@ -2427,7 +2708,7 @@ Standard 30 days payment terms apply.</textarea>
                     <div class="flex gap-2">
                         <span class="font-mono text-accent font-bold">#${idx + 1}</span>
                         <input type="text" value="${item.description}" placeholder="Description" class="flex-1 bg-darkbg border border-cream/5 rounded px-2 py-1 text-cream focus:outline-none focus:border-accent" oninput="updateLineItem(${idx}, 'description', this.value); highlightField('preview-items-table')">
-                        <button onclick="removeLineItem(${idx}); renderWizardItemsList();" class="text-red-400 font-mono font-bold px-1">&times;</button>
+                        <button onclick="removeLineItem(${idx}); renderWizardItemsList();" aria-label="Remove item" class="text-red-400 font-mono font-bold px-1">&times;</button>
                     </div>
                     <div class="grid grid-cols-2 gap-2 pl-5">
                         <div class="flex items-center gap-1.5">
@@ -2488,7 +2769,7 @@ Standard 30 days payment terms apply.</textarea>
                     <input type="text" value="${item.description}" placeholder="Item Description" class="flex-1 min-w-0 bg-darkbg border border-cream/5 rounded px-2 py-1 text-cream focus:outline-none focus:border-accent" oninput="updateLineItem(${idx}, 'description', this.value)">
                     <input type="number" value="${item.quantity}" placeholder="Qty" min="1" class="w-12 bg-darkbg border border-cream/5 rounded px-1.5 py-1 text-center text-cream focus:outline-none focus:border-accent" oninput="updateLineItem(${idx}, 'quantity', this.value)">
                     <input type="number" value="${item.unitPrice}" placeholder="Price" min="0" class="w-20 bg-darkbg border border-cream/5 rounded px-2 py-1 text-cream focus:outline-none focus:border-accent" oninput="updateLineItem(${idx}, 'unitPrice', this.value)">
-                    <button onclick="removeLineItem(${idx})" class="text-red-400 hover:text-red-300 font-mono font-bold px-1">&times;</button>
+                    <button onclick="removeLineItem(${idx})" aria-label="Remove item" class="text-red-400 hover:text-red-300 font-mono font-bold px-1">&times;</button>
                 `;
                 container.appendChild(itemDiv);
             });
@@ -2900,8 +3181,12 @@ Standard 30 days payment terms apply.</textarea>
             let logoHeightClass = 'max-h-12';
             if (logoSize === 'small') {
                 logoHeightClass = 'max-h-8';
+            } else if (logoSize === 'medium') {
+                logoHeightClass = 'max-h-12';
             } else if (logoSize === 'large') {
                 logoHeightClass = 'max-h-20';
+            } else if (logoSize === 'xlarge') {
+                logoHeightClass = 'max-h-28 max-w-[260px]';
             }
 
             const selectedFontClass = document.getElementById('style-font').value;
@@ -3742,26 +4027,55 @@ Standard 30 days payment terms apply.</textarea>
 
         function showOnboardingOverlay() {
             const onboardingHtml = `
-                <div id="onboarding-overlay" class="fixed inset-0 z-[90] bg-[#0E161B] flex items-center justify-center p-4">
-                    <div class="max-w-md w-full bg-[#16222A] border border-cream/15 p-8 rounded-2xl shadow-2xl space-y-6">
+                <div id="onboarding-overlay" class="fixed inset-0 z-[90] bg-[#0E161B]/95 backdrop-blur-md flex items-center justify-center p-4">
+                    <div class="max-w-lg w-full bg-[#16222A] border border-cream/20 p-8 rounded-2xl shadow-2xl space-y-6">
                         <div class="text-center space-y-2 border-b border-cream/10 pb-4">
-                            <h2 class="font-brand text-2xl text-cream">System Onboarding Setup</h2>
-                            <p class="font-mono text-[10px] text-cream/40 uppercase tracking-widest">Complete setup to customize CRM UI</p>
+                            <span class="font-mono text-[9px] text-accent uppercase tracking-widest font-bold">WELCOME & SYSTEM SETUP</span>
+                            <h2 class="font-brand text-2xl text-cream">Property & Brand Customization</h2>
+                            <p class="font-mono text-[10px] text-cream/50">Setup your identity, logo dimensions, and contrast-checked color theme.</p>
                         </div>
-                        <div class="space-y-4">
+                        <div class="space-y-4 text-xs font-mono">
                             <div>
-                                <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Company Name</label>
-                                <input type="text" id="ob-company-name" placeholder="Acme Luxury Retreats" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent">
+                                <label class="block text-cream/70 text-[10px] uppercase font-bold mb-1">Company / Property Name</label>
+                                <input type="text" id="ob-company-name" placeholder="e.g. Ocean View Manor & Suites" value="Ocean View Manor" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent">
                             </div>
-                            <div>
-                                <label class="block text-cream/60 font-mono text-[9px] uppercase font-bold mb-1">Upload Company Logo</label>
-                                <div class="relative border border-dashed border-cream/20 rounded-lg p-4 text-center bg-[#0E161B]/40 hover:border-accent/50 transition-colors cursor-pointer group">
-                                    <input type="file" id="ob-logo-upload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleOnboardingLogo(this)">
-                                    <span id="ob-logo-label" class="text-[10px] text-cream/40 group-hover:text-cream/70 font-mono">Click or drag logo file here</span>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-cream/70 text-[10px] uppercase font-bold mb-1">Upload Logo</label>
+                                    <div class="relative border border-dashed border-cream/20 rounded-lg p-3 text-center bg-[#0E161B]/40 hover:border-accent/50 transition-colors cursor-pointer group">
+                                        <input type="file" id="ob-logo-upload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleOnboardingLogo(this)">
+                                        <span id="ob-logo-label" class="text-[9px] text-cream/50 group-hover:text-cream/80">Upload Logo</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-cream/70 text-[10px] uppercase font-bold mb-1">Logo Display Size</label>
+                                    <select id="ob-logo-size" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-2.5 py-2 text-cream focus:outline-none focus:border-accent text-xs">
+                                        <option value="small">Small (32px)</option>
+                                        <option value="medium">Medium (48px)</option>
+                                        <option value="large">Large (80px)</option>
+                                        <option value="xlarge" selected>Extra Large (112px)</option>
+                                    </select>
                                 </div>
                             </div>
+
+                            <div>
+                                <label class="block text-cream/70 text-[10px] uppercase font-bold mb-1">Select System Color Palette (High-Contrast)</label>
+                                <select id="ob-color-palette" class="w-full bg-[#0E161B] border border-cream/15 rounded-lg px-3 py-2 text-cream focus:outline-none focus:border-accent text-xs">
+                                    <option value="auto">✨ Auto-Extract High-Contrast Palette from Logo</option>
+                                    <option value="preset-terracotta" selected>Studio Terracotta & Cream (Classic)</option>
+                                    <option value="preset-navy">Corporate Navy & Slate</option>
+                                    <option value="preset-dark">Modern Emerald Dark</option>
+                                    <option value="preset-ocean">Ocean Resort Blue</option>
+                                    <option value="preset-minimal">Classic Minimalist Monochrome</option>
+                                </select>
+                            </div>
+
                             <div id="ob-error" class="hidden text-xs text-red-400 font-mono text-center">Company Name is required to proceed.</div>
-                            <button onclick="handleOnboardingSubmit()" class="w-full bg-accent hover:bg-accent-hover text-cream font-mono font-bold py-3 rounded-lg transition-all uppercase tracking-wider text-xs">Finish Setup</button>
+
+                            <button onclick="handleOnboardingSubmit()" class="w-full bg-accent hover:bg-accent-hover text-cream font-mono font-bold py-3.5 rounded-xl transition-all uppercase tracking-wider text-xs btn-depth">
+                                Start Guided Menu Feature Tour →
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -3788,9 +4102,14 @@ Standard 30 days payment terms apply.</textarea>
                 return;
             }
 
+            const logoSize = document.getElementById('ob-logo-size').value;
+            const paletteChoice = document.getElementById('ob-color-palette').value;
+
             const config = {
                 companyName: compName,
-                logoBase64: onboardingLogoBase64
+                logoBase64: onboardingLogoBase64,
+                logoSize: logoSize,
+                paletteChoice: paletteChoice
             };
 
             localStorage.setItem('byjanno_company_config', JSON.stringify(config));
@@ -3798,10 +4117,109 @@ Standard 30 days payment terms apply.</textarea>
             if (overlay) overlay.remove();
 
             applyCompanyConfig(config);
+            startGuidedMenuTour();
+        }
+
+        // Interactive Guided Tour that walks user through the right menu step-by-step
+        let tourStep = 0;
+        const tourSteps = [
+            { mode: 'designer', title: '1. Designer Studio', desc: 'Here you build and style customized Tax Invoices & Quotations with your brand logo, headers, line items, and color themes.' },
+            { mode: 'wizard', title: '2. Quick Wizard Builder', desc: 'Use this guided 5-step wizard for fast, hassle-free invoice generation.' },
+            { mode: 'guests', title: '3. Guest CRM Directory', desc: 'Manage guest contact cards, room assignments, stay dates, and view past document history.' },
+            { mode: 'whatsapp', title: '4. WhatsApp Suite', desc: 'Configure automated pre-travel, during-stay concierge, and post-stay review templates.' },
+            { mode: 'pricing', title: '5. OTA Rates & Pricing Guide', desc: 'Calculate your exact net payouts after Booking.com, Airbnb, and card processor fees.' },
+            { mode: 'calendar', title: '6. Landscape Booking Calendar (Home)', desc: 'Welcome back to your calendar! Here you can manage bookings and execute individual 1-Click checklist actions for each stay item.' }
+        ];
+
+        function startGuidedMenuTour() {
+            tourStep = 0;
+            showTourStep();
+        }
+
+        function showTourStep() {
+            const step = tourSteps[tourStep];
+            if (!step) return;
+
+            setUIMode(step.mode);
+
+            let tourModal = document.getElementById('guided-tour-banner');
+            if (!tourModal) {
+                const bannerHtml = `
+                    <div id="guided-tour-banner" class="fixed bottom-6 right-6 z-[80] max-w-md w-full bg-[#16222A] border-2 border-accent p-5 rounded-2xl shadow-2xl space-y-3 font-mono text-xs no-print">
+                        <div class="flex justify-between items-center border-b border-cream/10 pb-2">
+                            <span class="text-accent uppercase font-bold text-[10px]" id="tour-step-count">System Tour Step 1 of 6</span>
+                            <button onclick="endGuidedTour()" class="text-[9px] text-cream/40 hover:text-cream">Skip Tour</button>
+                        </div>
+                        <h4 class="font-bold text-cream text-sm" id="tour-step-title">Feature Name</h4>
+                        <p class="text-cream/70 text-[11px] leading-relaxed" id="tour-step-desc">Description</p>
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="text-[9px] text-cream/40" id="tour-navigation-hint">Navigating right side menu...</span>
+                            <button onclick="nextTourStep()" id="btn-tour-next" class="bg-accent hover:bg-accent-hover text-cream px-3 py-1.5 rounded-lg font-bold text-[10px] btn-depth">Next Feature →</button>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', bannerHtml);
+                tourModal = document.getElementById('guided-tour-banner');
+            }
+
+            document.getElementById('tour-step-count').textContent = `System Tour Step ${tourStep + 1} of ${tourSteps.length}`;
+            document.getElementById('tour-step-title').textContent = step.title;
+            document.getElementById('tour-step-desc').textContent = step.desc;
+
+            const nextBtn = document.getElementById('btn-tour-next');
+            if (tourStep === tourSteps.length - 1) {
+                nextBtn.textContent = 'Finish Tour & Start Using Calendar';
+            } else {
+                nextBtn.textContent = 'Next Menu Feature →';
+            }
+        }
+
+        function nextTourStep() {
+            tourStep++;
+            if (tourStep < tourSteps.length) {
+                showTourStep();
+            } else {
+                endGuidedTour();
+            }
+        }
+
+        function endGuidedTour() {
+            const banner = document.getElementById('guided-tour-banner');
+            if (banner) banner.remove();
             setUIMode('calendar');
         }
 
-        function applyCompanyConfig(config) {
+        // Per-item 1-Click Action Handlers
+        function oneClickActionQuote(stayId) {
+            const stay = staysList.find(s => s.id === stayId);
+            if (!stay) return;
+            if (!stay.workflowStatus) stay.workflowStatus = {};
+            stay.workflowStatus.quoteSent = true;
+            saveStaysDatabase();
+            renderBookingCalendar();
+            alert(`⚡ 1-Click Action: Quotation generated & logged for ${stay.guestName} (${stay.roomName}). Workflow checklist updated!`);
+        }
+
+        function oneClickActionInvoice(stayId) {
+            const stay = staysList.find(s => s.id === stayId);
+            if (!stay) return;
+            if (!stay.workflowStatus) stay.workflowStatus = {};
+            stay.workflowStatus.invoiceSent = true;
+            saveStaysDatabase();
+            renderBookingCalendar();
+            alert(`⚡ 1-Click Action: Tax Invoice generated & logged for ${stay.guestName} (${stay.roomName}). Workflow checklist updated!`);
+        }
+
+        function oneClickActionWA(stayId, stageKey) {
+            const stay = staysList.find(s => s.id === stayId);
+            if (!stay) return;
+            if (!stay.workflowStatus) stay.workflowStatus = {};
+            stay.workflowStatus[stageKey] = true;
+            saveStaysDatabase();
+            renderBookingCalendar();
+            dispatchWhatsAppToGuest(stay.guestId || 'sample', stageKey);
+        }
+function applyCompanyConfig(config) {
             // Replace top left header text 'by janno.'
             const headerNameEl = document.getElementById('header-company-name-container');
             if (headerNameEl) {
@@ -3828,6 +4246,20 @@ Standard 30 days payment terms apply.</textarea>
             // Update state and refresh preview company configs
             document.getElementById('company-name').value = config.companyName;
             docLogoBase64 = config.logoBase64;
+
+            if (config.logoSize) {
+                const logoSizeEl = document.getElementById('logo-size');
+                if (logoSizeEl) logoSizeEl.value = config.logoSize;
+            }
+
+            if (config.paletteChoice) {
+                if (config.paletteChoice === 'auto' && config.logoBase64) {
+                    togglePersonalMode();
+                } else if (config.paletteChoice.startsWith('preset-')) {
+                    loadCustomPalette(config.paletteChoice);
+                }
+            }
+
             updatePreview();
         }
 
